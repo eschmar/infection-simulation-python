@@ -13,6 +13,7 @@ class Simulation:
         self.probabilityOfInfection = probabilityOfInfection
         self.probabilityOfDeath = probabilityOfDeath
         self.lengthOfInfection = lengthOfInfection
+        self.iteration = 0
 
         self.populate()
         self.population[3] = self.getRandomInfectionLength()
@@ -23,8 +24,18 @@ class Simulation:
 
         while self.isRunning:
             self.isRunning = False
+            self.writeFrameToFile()
+            self.iteration = self.iteration + 1
             self.advance()
     
+    def writeFrameToFile(self):
+        """Write current population to file."""
+        file = open("out/frame{0}.txt".format(self.iteration), "w")
+        for x in range(0, self.size):
+            file.write(",".join(str(v) for v in self.population[x*self.size:x*self.size+self.size]))
+            file.write("\n")
+        file.close()
+
     def populate(self):
         """What is this"""
         self.population = []
@@ -81,7 +92,7 @@ class Simulation:
 
                 # try to infect
                 if self.population[neighbourPos] == self.CELL_STATE_HEALTHY and self.future[neighbourPos] == self.CELL_STATE_HEALTHY:
-                    if self.getRandomBoolean(self.probabilityOfDeath):
+                    if self.getRandomBoolean(self.probabilityOfInfection):
                         self.future[neighbourPos] = self.getRandomInfectionLength()
 
     def getRandomNumber(self):
