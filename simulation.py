@@ -1,7 +1,5 @@
 import random
 
-random.seed(5)
-
 class Simulation:
     """Infection Simulation."""
     CELL_STATE_HEALTHY = "_"
@@ -28,8 +26,11 @@ class Simulation:
 
         # prepare population
         self.populate()
-        self.contaminate(0,3)
     
+    def setSeed(self, num):
+        """Set a specific seed for rng."""
+        random.seed(num)
+
     def run(self):
         """Run the simulation"""
         self.isRunning = True
