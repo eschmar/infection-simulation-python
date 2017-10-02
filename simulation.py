@@ -9,30 +9,60 @@ class Simulation:
     CELL_STATE_IMMUNE = "I"
 
     def __init__(self, size, probabilityOfInfection, probabilityOfDeath, lengthOfInfection):
+        # settings
         self.size = size
         self.probabilityOfInfection = probabilityOfInfection
         self.probabilityOfDeath = probabilityOfDeath
         self.lengthOfInfection = lengthOfInfection
         self.iteration = 0
 
+        # statistics
+        self.infectedPerDay = []
+        self.deathsPerDay = []
+        self.recoveredPerDay = []
+        self.illPerDay = []
+        self.currentlyIll = 0
+
+        # prepare population
         self.populate()
-        self.population[3] = self.getRandomInfectionLength()
+        self.contaminate(0,3)
     
     def run(self):
         """Run the simulation"""
         self.isRunning = True
 
+        # run simulation
         while self.isRunning:
             self.isRunning = False
             self.writeFrameToFile()
             self.iteration = self.iteration + 1
             self.advance()
+
+        if self.currentlyIll != 0:
+            raise ValueError("Simulation has finished, but there are still infected cells active.")
+
+        # print results
+        print("Average infected per iteration: {0}".format(self.average(self.infectedPerDay)))
+        print("Average deaths per iteration: {0}".format(self.average(self.deathsPerDay)))
+        print("Average recovered per iteration: {0}".format(self.average(self.recoveredPerDay)))
+        print("Average ill per iteration: {0}".format(self.average(self.illPerDay)))
+
+        print("Sum of infected: {0}".format(sum(self.infectedPerDay)))
+        print("Sum of deaths: {0}".format(sum(self.deathsPerDay)))
+
+    def contaminate(self, x, y):
+        """Contaminate a specific cell"""
+        self.population[self.getPos(x, y)] = self.getRandomInfectionLength()
+        self.currentlyIll += 1
+
+    def average(self, l):
+        return sum(l) / float(len(l))
     
     def writeFrameToFile(self):
         """Write current population to file."""
         file = open("out/frame{0}.txt".format(self.iteration), "w")
         for x in range(0, self.size):
-            file.write(",".join(str(v) for v in self.population[x*self.size:x*self.size+self.size]))
+            file.write(" ".join(str(v) for v in self.population[x*self.size:x*self.size+self.size]))
             file.write("\n")
         file.close()
 
@@ -49,11 +79,22 @@ class Simulation:
         """Advance one iteration in the simulation"""
         self.future = self.population[:]
 
+        # statistics
+        self.infectedToday = 0
+        self.deadToday = 0
+        self.recoveredToday = 0
+
         # update each cell
         for x in range(0, self.size):
             for y in range(0, self.size):
                 self.live(x, y)
         
+        # update statistics with new data
+        self.infectedPerDay.append(self.infectedToday)
+        self.deathsPerDay.append(self.deadToday)
+        self.recoveredPerDay.append(self.recoveredToday)
+        self.illPerDay.append(self.currentlyIll)
+
         self.population = self.future
     
     def live(self, x, y):
@@ -68,8 +109,12 @@ class Simulation:
 
         if remainingDaysInfected <= 0:
             self.future[pos] = self.CELL_STATE_IMMUNE
+            self.recoveredToday += 1
+            self.currentlyIll -= 1
         elif remainingDaysInfected > 0 and self.getRandomBoolean(self.probabilityOfDeath):
             self.future[pos] = self.CELL_STATE_DEAD
+            self.deadToday += 1
+            self.currentlyIll -= 1
         else:
             self.future[pos] = remainingDaysInfected - 1
         
@@ -94,6 +139,8 @@ class Simulation:
                 if self.population[neighbourPos] == self.CELL_STATE_HEALTHY and self.future[neighbourPos] == self.CELL_STATE_HEALTHY:
                     if self.getRandomBoolean(self.probabilityOfInfection):
                         self.future[neighbourPos] = self.getRandomInfectionLength()
+                        self.infectedToday += 1
+                        self.currentlyIll += 1
 
     def getRandomNumber(self):
         """Returns random float x, 0.0 <= x < 1.0."""

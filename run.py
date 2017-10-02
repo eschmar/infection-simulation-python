@@ -1,5 +1,5 @@
 from simulation import Simulation
 
 # run simulation
-simulation = Simulation(50, 1, 0.1, [2, 6])
+simulation = Simulation(40, 0.02, 0, [6, 9])
 simulation.run()
