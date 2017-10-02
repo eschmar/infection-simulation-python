@@ -8,6 +8,9 @@ class Simulation:
     CELL_STATE_DEAD = "X"
     CELL_STATE_IMMUNE = "I"
 
+    isSilent = False
+    writeFrames = False
+
     def __init__(self, size, probabilityOfInfection, probabilityOfDeath, lengthOfInfection):
         # settings
         self.size = size
@@ -41,6 +44,9 @@ class Simulation:
         if self.currentlyIll != 0:
             raise ValueError("Simulation has finished, but there are still infected cells active.")
 
+        if self.isSilent:
+            return
+
         # print results
         print("Average infected per iteration: {0}".format(self.average(self.infectedPerDay)))
         print("Average deaths per iteration: {0}".format(self.average(self.deathsPerDay)))
@@ -60,6 +66,9 @@ class Simulation:
     
     def writeFrameToFile(self):
         """Write current population to file."""
+        if not self.writeFrames:
+            return
+
         file = open("out/frame{0}.txt".format(self.iteration), "w")
         for x in range(0, self.size):
             file.write(" ".join(str(v) for v in self.population[x*self.size:x*self.size+self.size]))
