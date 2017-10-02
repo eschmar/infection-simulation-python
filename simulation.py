@@ -26,7 +26,7 @@ class Simulation:
 
         # prepare population
         self.populate()
-    
+
     def setSeed(self, num):
         """Set a specific seed for rng."""
         random.seed(num)
@@ -106,7 +106,7 @@ class Simulation:
         self.illPerDay.append(self.currentlyIll)
 
         self.population = self.future
-    
+
     def live(self, x, y):
         """Update a cell's state for one iteration."""
         pos = self.getPos(x, y)
@@ -129,7 +129,7 @@ class Simulation:
             self.future[pos] = remainingDaysInfected - 1
         
         self.infectNeighboursOf(x, y)
-    
+
     def infectNeighboursOf(self, x, y):
         """Try to infect all cell's neighbours."""
         pos = self.getPos(x, y)
@@ -159,7 +159,7 @@ class Simulation:
     def getRandomInfectionLength(self):
         """Returns a random integer between min and max."""
         return random.randint(self.lengthOfInfection[0], self.lengthOfInfection[1])
-    
+
     def getRandomBoolean(self, probability):
         """Returns true or false depending on a given probability."""
         return self.getRandomNumber() < probability
