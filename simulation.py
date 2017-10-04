@@ -4,7 +4,8 @@ class Simulation:
     """Infection Simulation."""
     CELL_STATE_HEALTHY = "_"
     CELL_STATE_DEAD = "X"
-    CELL_STATE_IMMUNE = "I"
+    CELL_STATE_INFECTED = "I"
+    CELL_STATE_IMMUNE = "."
 
     isSilent = False
     writeFrames = False
@@ -49,6 +50,7 @@ class Simulation:
             return
 
         # print results
+        print("Simulation took {0} iterations.".format(self.iteration))
         print("Average infected per iteration: {0}".format(self.average(self.infectedPerDay)))
         print("Average deaths per iteration: {0}".format(self.average(self.deathsPerDay)))
         print("Average recovered per iteration: {0}".format(self.average(self.recoveredPerDay)))
@@ -59,7 +61,7 @@ class Simulation:
 
     def contaminate(self, x, y):
         """Contaminate a specific cell"""
-        self.population[self.getPos(x, y)] = self.getRandomInfectionLength()
+        self.population[self.getPos(x, y)] = self.CELL_STATE_INFECTED
         self.currentlyIll += 1
 
     def average(self, l):
@@ -111,7 +113,11 @@ class Simulation:
         """Update a cell's state for one iteration."""
         pos = self.getPos(x, y)
 
-        if not isinstance(self.population[pos], int):
+        if self.population[pos] == self.CELL_STATE_INFECTED:
+            self.future[pos] = self.getRandomInfectionLength()
+            self.isRunning = True
+            return
+        elif not isinstance(self.population[pos], int):
             return
 
         self.isRunning = True
@@ -127,8 +133,7 @@ class Simulation:
             self.currentlyIll -= 1
         else:
             self.future[pos] = remainingDaysInfected - 1
-        
-        self.infectNeighboursOf(x, y)
+            self.infectNeighboursOf(x, y)
 
     def infectNeighboursOf(self, x, y):
         """Try to infect all cell's neighbours."""
@@ -148,7 +153,7 @@ class Simulation:
                 # try to infect
                 if self.population[neighbourPos] == self.CELL_STATE_HEALTHY and self.future[neighbourPos] == self.CELL_STATE_HEALTHY:
                     if self.getRandomBoolean(self.probabilityOfInfection):
-                        self.future[neighbourPos] = self.getRandomInfectionLength()
+                        self.future[neighbourPos] = self.CELL_STATE_INFECTED
                         self.infectedToday += 1
                         self.currentlyIll += 1
 

@@ -46,7 +46,6 @@ if '--frames' in params and params['--frames']:
 
 if '-seed' in params:
     simulation.setSeed(int(params['-seed']))
-    simulation.writeFrames = True
 
 # contaminate one cell
 simulation.contaminate(0,3)
