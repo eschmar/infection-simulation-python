@@ -53,6 +53,7 @@ class Simulation:
         self.currentlyIll += 1
 
     def average(self, l):
+        """Retruns the average of the list"""
         return sum(l) / float(len(l))
     
     def writeFrameToFile(self):
