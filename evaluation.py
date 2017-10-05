@@ -1,4 +1,4 @@
-import run, helper, sys, pylab
+import run, helper, sys, pylab, math
 
 # pares input parameters for potential custom ranges
 params = helper.parseArguments(sys.argv)
@@ -85,8 +85,28 @@ x = csv[0]
 y = csv[1]
 width = 1/1.5
 
-pylab.bar(x, y, width, color="navy")
+standardDeviation = []
+for p in range(0, len(x)):
+    variance = []
+    for i in range(0, len(selectedRandomPrimes)):
+        variance.append(math.pow(csv[1][p] - csv[i + 2][p], 2))
 
+    standardDeviation.append(math.sqrt(sum(variance) / len(selectedRandomPrimes)))
+
+# confidence intervals, C = 95%
+z = 1.96
+
+xerr = []
+for i in range(0, len(standardDeviation)):
+    xerr.append(csv[1][i]-z*(standardDeviation[i]/math.sqrt(len(selectedRandomPrimes))))
+
+yerr = []
+for i in range(0, len(standardDeviation)):
+    yerr.append(csv[1][i]+z*(standardDeviation[i]/math.sqrt(len(selectedRandomPrimes))))
+
+pylab.errorbar(x, y, fmt='m-x', color="navy", yerr=[temp1, temp2])
+
+# plot threshold indicator lines
 thresholdLine = []
 for i in range(0, len(x)):
     thresholdLine.append(threshold)
