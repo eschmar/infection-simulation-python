@@ -58,10 +58,6 @@ def run(args):
         # contaminate one cell
         simulation.contaminate(0,0)
 
-    isSilent = False
-    if '--silent' in params and params['--silent']:
-        isSilent = True
-
     if '--frames' in params and params['--frames']:
         simulation.writeFrames = True
 
@@ -72,15 +68,25 @@ def run(args):
     iteration, avgInfectedPerDay, avgDeathsPerDay, avgRecoveredPerDay, avgIllPerDay, sumInfectedPerDay, sumDeathsPerDay = simulation.run()
 
     # print output
-    if not isSilent:
-        # print results
+    if '--iterations' in params or '--print' in params:
         print("Simulation took {0} iterations.".format(iteration))
+    
+    if '--avgInfected' in params or '--print' in params:
         print("Average infected per iteration: {0}".format(avgInfectedPerDay))
+    
+    if '--avgDead' in params or '--print' in params:
         print("Average deaths per iteration: {0}".format(avgDeathsPerDay))
+
+    if '--avgRecovered' in params or '--print' in params:
         print("Average recovered per iteration: {0}".format(avgRecoveredPerDay))
+    
+    if '--avgIll' in params or '--print' in params:
         print("Average ill per iteration: {0}".format(avgIllPerDay))
 
+    if '--sumInfected' in params or '--print' in params:
         print("Sum of infected: {0}".format(sumInfectedPerDay))
+
+    if '--sumDeaths' in params or '--print' in params:
         print("Sum of deaths: {0}".format(sumDeathsPerDay))
 
     return sumInfectedPerDay

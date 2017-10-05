@@ -1,4 +1,4 @@
-import run, helper, sys
+import run, helper, sys, pylab
 
 # pares input parameters for potential custom ranges
 params = helper.parseArguments(sys.argv)
@@ -27,7 +27,11 @@ if '-rangeTo' in params:
     val = int(params['-rangeTo'])
     if val < 0 or val > 100 or rangeTo < rangeFrom:
         raise ValueError("Range has to be within 0 <= from < to <= 100.")
-    rangeTo = val
+    rangeTo = val + 1
+
+breakOnThreshold = False
+if '--break' in params:
+    breakOnThreshold = True
 
 # threshold is half the population
 threshold = (size * size) / 2
@@ -65,7 +69,7 @@ for i in range(rangeFrom, rangeTo):
     csv[1].append(infected)
 
     # once epidemic is reached, stop
-    if (infected >= threshold):
+    if (breakOnThreshold and infected >= threshold):
         print("Probability of {0} infected {1} in average!".format(infectionProbability, infected))
         break
 
@@ -75,3 +79,33 @@ for i in range(0, len(csv)):
     file.write(";".join(str(val) for val in csv[i]))
     file.write("\n")
 file.close()
+
+# plot results
+x = csv[0]
+y = csv[1]
+width = 1/1.5
+
+pylab.bar(x, y, width, color="navy")
+
+thresholdLine = []
+for i in range(0, len(x)):
+    thresholdLine.append(threshold)
+
+populationLine = []
+for i in range(0, len(x)):
+    populationLine.append(size * size)
+
+pylab.plot(x, thresholdLine, 'r--', label='Epidemic threshold')
+pylab.plot(x, populationLine, 'b--', label='Total population')
+
+pylab.axis([csv[0][0], csv[0][len(csv[0])-1], -20, size * size + 100])
+pylab.xlabel('Probability of infection [0,1]')
+pylab.ylabel('Average of infected individuals')
+
+pylab.title('Evaluation of the relation between infection probability and number of infected')
+pylab.legend(loc="center right")
+
+if '--save' in params:
+    pylab.savefig('plot.png')
+else:
+    pylab.show();
