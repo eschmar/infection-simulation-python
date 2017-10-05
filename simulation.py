@@ -9,7 +9,7 @@ class Simulation:
 
     writeFrames = False
 
-    def __init__(self, size, probabilityOfInfection, probabilityOfDeath, lengthOfInfection):
+    def __init__(self, size = 40, probabilityOfInfection = 0.02, probabilityOfDeath = 0, lengthOfInfection = [6, 9]):
         # settings
         self.size = size
         self.probabilityOfInfection = probabilityOfInfection
@@ -68,13 +68,18 @@ class Simulation:
         file.close()
 
     def populate(self):
-        """What is this"""
+        """Prepare the population grid."""
         self.population = []
         for i in range(0, self.size * self.size):
             self.population.append(self.CELL_STATE_HEALTHY)
 
     def getPos(self, x, y):
-        return x * self.size + y
+        """Translate coordinates to array position."""
+        pos = x * self.size + y
+        if pos < 0 or pos > self.size * self.size:
+            raise ValueError("Position out of bounds detected")
+
+        return pos
     
     def advance(self):
         """Advance one iteration in the simulation"""
