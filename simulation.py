@@ -7,7 +7,6 @@ class Simulation:
     CELL_STATE_INFECTED = "I"
     CELL_STATE_IMMUNE = "."
 
-    isSilent = False
     writeFrames = False
 
     def __init__(self, size, probabilityOfInfection, probabilityOfDeath, lengthOfInfection):
@@ -45,17 +44,6 @@ class Simulation:
 
         if self.currentlyIll != 0:
             raise ValueError("Simulation has finished, but there are still infected cells active.")
-
-        if not self.isSilent:
-            # print results
-            print("Simulation took {0} iterations.".format(self.iteration))
-            print("Average infected per iteration: {0}".format(self.average(self.infectedPerDay)))
-            print("Average deaths per iteration: {0}".format(self.average(self.deathsPerDay)))
-            print("Average recovered per iteration: {0}".format(self.average(self.recoveredPerDay)))
-            print("Average ill per iteration: {0}".format(self.average(self.illPerDay)))
-
-            print("Sum of infected: {0}".format(sum(self.infectedPerDay)))
-            print("Sum of deaths: {0}".format(sum(self.deathsPerDay)))
 
         return self.iteration, self.average(self.infectedPerDay), self.average(self.deathsPerDay), self.average(self.recoveredPerDay), self.average(self.illPerDay), sum(self.infectedPerDay), sum(self.deathsPerDay)
 

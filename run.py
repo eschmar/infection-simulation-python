@@ -43,7 +43,8 @@ def run(args):
     # init simulation
     simulation = Simulation(size, probabilityOfInfection, probabilityOfDeath, infectionLength)
 
-    if '-x' in params:
+    #  contaminate chosen individuals
+    if '-x' in params and len(params['-x']) > 0:
         for i in range(0, len(params['-x'])):
             point = params['-x'][i].split(",")
             x = int(point[0])
@@ -57,8 +58,9 @@ def run(args):
         # contaminate one cell
         simulation.contaminate(0,0)
 
+    isSilent = False
     if '--silent' in params and params['--silent']:
-        simulation.isSilent = True
+        isSilent = True
 
     if '--frames' in params and params['--frames']:
         simulation.writeFrames = True
@@ -68,6 +70,18 @@ def run(args):
 
     # run simulation
     iteration, avgInfectedPerDay, avgDeathsPerDay, avgRecoveredPerDay, avgIllPerDay, sumInfectedPerDay, sumDeathsPerDay = simulation.run()
+
+    # print output
+    if not isSilent:
+        # print results
+        print("Simulation took {0} iterations.".format(iteration))
+        print("Average infected per iteration: {0}".format(avgInfectedPerDay))
+        print("Average deaths per iteration: {0}".format(avgDeathsPerDay))
+        print("Average recovered per iteration: {0}".format(avgRecoveredPerDay))
+        print("Average ill per iteration: {0}".format(avgIllPerDay))
+
+        print("Sum of infected: {0}".format(sumInfectedPerDay))
+        print("Sum of deaths: {0}".format(sumDeathsPerDay))
 
     return sumInfectedPerDay
 
