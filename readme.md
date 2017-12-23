@@ -1,3 +1,5 @@
+The goal of this simulation experiment is to determine the necessary probability of an infectious disease to become epidemic, under certain predefined constraints. An epidemic is reached, once more than 50% of the population is infected.
+
 # setup
 ```
 pip install numpy scipy pylab
