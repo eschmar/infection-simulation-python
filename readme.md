@@ -1,7 +1,9 @@
-# package to install with pip install
-- pylab
+# setup
+```
+pip install numpy scipy pylab
+```
 
-# example queries:
+# example usage:
 
 run.py:
 ```
